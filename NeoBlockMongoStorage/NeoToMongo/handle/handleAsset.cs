@@ -25,7 +25,12 @@ namespace NeoToMongo
 
         public static void handle(string assetID)
         {
-            if(!Mongo.IsDataExist(collectionType,"id",assetID))
+            //var findBsonNEP5AssetBson = BsonDocument.Parse("{id:'" + assetID + "'}");
+            //var queryNEP5AssetBson = Collection.Find(findBsonNEP5AssetBson).ToList();
+
+            var queryNEP5AssetBson = Mongo.Find(Collection, "id", assetID);
+
+            if (queryNEP5AssetBson.Count==0)
             {
                 var resasset=Rpc.getassetstate(Config.NeoCliJsonRPCUrl, assetID).Result;
                 if(resasset.AsString()!=string.Empty)

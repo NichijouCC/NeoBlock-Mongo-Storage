@@ -1,31 +1,32 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NeoToMongo
 {
     class Program
     {
-        static string configPath = "appsetting.json";
+        static string configPath = "setting/appsettings.json";
         static void Main(string[] args)
         {
             loadConfig();
 
             MongoIndexHelper.initIndex(Config.mongodbConnStr,Config.mongodbDatabase);
 
-
-
+            Task.Run(()=> {
+                consoleMgr.run();
+            });
             AsyncLoop().Wait();
 
-
-
+            while (true) { };
         }
 
-
+        private static bool beActive=true;
         async static Task AsyncLoop()
         {
-            while(true)
+            while(true&&beActive)
             {
                 try
                 {
@@ -41,8 +42,11 @@ namespace NeoToMongo
                         continue;
                     }
                 }
-                catch
+                catch(Exception e)
                 {
+                    Console.WriteLine("async block:"+e.Message);
+                    beActive = false;
+
                     await Task.Delay(5000);
                 }
             }
@@ -52,18 +56,30 @@ namespace NeoToMongo
         {
             for (int i = fromHeight; i <= toHeight; i++)
             {
-                await Task.Run(async()=>
-                {
-                    var blockData= await Rpc.getblock(Config.NeoCliJsonRPCUrl, i);
-                    blockData.Remove("confirmations");
-                    blockData.Remove("nextblockhash");
+                var blockData=handleBlock.handle(i);
 
-                    //存储区块数据
-                    MongoInsertOne("block", blockData);
+                //List<Task> tasks = new List<Task>();
+                //tasks.Add(new Task(() =>
+                //{
+                //    handleTx.handle(blockData);
+                //}));
+                //tasks.Add(new Task(() =>
+                //{
+                //    handleNotify.handle(blockData);
+                //}));
+                //tasks.Add(new Task(() =>
+                //{
+                //    handleNotify.handle(blockData);
+                //}));
 
+                Task task1 = Task.Factory.StartNew(() =>
+                  {
+                      handleTx.handle(blockData);
+                  });
 
+                await Task.WhenAll(task1);
 
-                });
+                StateInfo.currentBlockHeight = i;
             }
         }
 
@@ -79,7 +95,7 @@ namespace NeoToMongo
             }
             catch (Exception e)
             {
-                Console.WriteLine("load config failed" + e.Message);
+                Console.WriteLine("load config failed." + e.Message);
             }
         }
 

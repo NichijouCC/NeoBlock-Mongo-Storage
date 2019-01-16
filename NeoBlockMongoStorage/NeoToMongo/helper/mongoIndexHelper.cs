@@ -16,7 +16,7 @@ namespace NeoToMongo
         public static void initIndex(string mongodbConnStr, string mongodbDatabase)
         {
             //读取index配置文件
-            JArray indexConfigJA = JArray.Parse(File.ReadAllText("indexSettings.json"));
+            JArray indexConfigJA = JArray.Parse(File.ReadAllText("setting/indexSettings.json"));
             //var a = JsonConvert.SerializeObject(indexConfigJA);
             foreach (var J in indexConfigJA)
             {

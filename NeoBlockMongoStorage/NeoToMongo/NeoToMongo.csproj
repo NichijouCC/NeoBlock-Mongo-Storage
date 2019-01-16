@@ -6,15 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="setting\appsettings.json" />
+    <Content Include="bin\Debug\netcoreapp2.1\setting\appsettings.json" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MongoDB.Driver" Version="2.7.2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="bin\Debug\netcoreapp2.1\" />
+    <None Include="bin\Debug\netcoreapp2.1\setting\appsettings.json" />
+    <None Include="bin\Debug\netcoreapp2.1\setting\indexSettings.json" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

@@ -3,14 +3,15 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NeoToMongo
 {
     class handleTx
     {
-        static string collectionType = "tx";
+        public static string collectionType = "tx";
         static IMongoCollection<BsonDocument> _Collection;
-        static IMongoCollection<BsonDocument> Collection
+        public static IMongoCollection<BsonDocument> Collection
         {
             get
             {
@@ -22,22 +23,39 @@ namespace NeoToMongo
             }
         }
 
-        async public static void handle(MyJson.JsonNode_Object blockData)
+        public static void handle(MyJson.JsonNode_Object blockData)
         {
             int blockindex = blockData["index"].AsInt();
             var blockTx = blockData["tx"].AsList();
+            var blockTimeTS = blockData["time"].AsInt();
+            DateTime blockTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc), TimeZoneInfo.Local).AddSeconds(blockTimeTS);
 
             List<BsonDocument> listbson = new List<BsonDocument>();
-            foreach(var item in blockTx)
+
+            var count = Mongo.GetSystemCounter(collectionType);
+            int startTxIndex = count.lastBlockindex < blockindex ? 0:count.lastTxindex;
+
+            for(
+                int i= startTxIndex; i< blockTx.Count;i++)
             {
-                item.AsDict().SetDictValue("blockindex",blockindex);
+                var item = blockTx[i] as MyJson.JsonNode_Object;
+                item.AsDict().SetDictValue("blockindex", blockindex);
                 listbson.Add(BsonDocument.Parse(item.ToString()));
+                Collection.InsertOne(BsonDocument.Parse(item.ToString()));
+
+                Mongo.SetSystemCounter(collectionType,blockindex,i);
+                //HandleUtxo.handle2(blockindex, blockTime,item);
+                //Task.Run(() =>
+                //{
+                //    string txid = item["txid"].AsString();
+                //    handleFullLog.handle(txid);
+                //});
             }
 
-            if(listbson.Count>0)
-            {
-               await Collection.InsertManyAsync(listbson);
-            }
+            //if(listbson.Count>0)
+            //{
+            //   Collection.InsertMany(listbson);
+            //}
         }
     }
 }

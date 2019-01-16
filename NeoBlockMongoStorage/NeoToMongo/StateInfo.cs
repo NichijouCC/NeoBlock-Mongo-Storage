@@ -19,6 +19,23 @@ namespace NeoToMongo
             }
         }
 
+        private static Dictionary<string, Mongo.Couter> info;
+
+        public static void stop()
+        {
+
+        }
+
+        public static void init()
+        {
+            if(info==null)
+            {
+                info = new Dictionary<string, Mongo.Couter>();
+            }
+            info.Add(handleBlock.collectionType, Mongo.GetSystemCounter(handleBlock.collectionType));
+            info.Add(handleTx.collectionType, Mongo.GetSystemCounter(handleTx.collectionType));
+        }
+
 
 
 
