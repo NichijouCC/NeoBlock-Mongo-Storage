@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NeoToMongo
@@ -14,6 +15,8 @@ namespace NeoToMongo
             loadConfig();
 
             MongoIndexHelper.initIndex(Config.mongodbConnStr,Config.mongodbDatabase);
+
+            Log.clearLog();
 
             Task.Run(()=> {
                 consoleMgr.run();
@@ -54,34 +57,49 @@ namespace NeoToMongo
 
         async static Task SyncBlockToHeight(int fromHeight, int toHeight)
         {
+            List<Task> taskArr = new List<Task>();
             for (int i = fromHeight; i <= toHeight; i++)
             {
-                var blockData=handleBlock.handle(i);
+                Task newtask = Task.Factory.StartNew( async() =>
+                {
+                    var blockData = handleBlock.handle(i);
+                    await handleTx.handle(blockData);
+                    StateInfo.currentBlockHeight++;
+                });
+                taskArr.Add(newtask);
 
-                //List<Task> tasks = new List<Task>();
-                //tasks.Add(new Task(() =>
-                //{
-                //    handleTx.handle(blockData);
-                //}));
-                //tasks.Add(new Task(() =>
-                //{
-                //    handleNotify.handle(blockData);
-                //}));
-                //tasks.Add(new Task(() =>
-                //{
-                //    handleNotify.handle(blockData);
-                //}));
-
-                Task task1 = Task.Factory.StartNew(() =>
-                  {
-                      handleTx.handle(blockData);
-                  });
-
-                await Task.WhenAll(task1);
-
-                StateInfo.currentBlockHeight = i;
+                if(taskArr.Count>=50|| taskArr.Count+ toHeight - fromHeight <50)
+                {
+                    await Task.WhenAll(taskArr);
+                    taskArr.Clear();
+                }
             }
         }
+
+        //private static Queue<List<Task>> queueTask = new Queue<List<Task>>();
+        //private static List<Task> currentArrTask = new List<Task>();
+        //static void asyncBlockData(int fromHeight, int toHeight)
+        //{
+        //    for (int i = fromHeight; i <= toHeight; i++)
+        //    {
+        //        var blockData = handleBlock.handle(i);
+        //        Task newtask = Task.Factory.StartNew(async () =>
+        //        {
+        //            //var blockData = handleBlock.handle(i);
+        //            await handleTx.handle(blockData);
+        //            StateInfo.currentBlockHeight++;
+        //        });
+        //        currentArrTask.Add(newtask);
+        //        if(currentArrTask.Count>=10)
+        //        {
+        //            queueTask.Enqueue(currentArrTask);
+        //            currentArrTask = new List<Task>();
+        //        }
+        //    }
+        //}
+
+        
+
 
 
         /// <summary>

@@ -39,5 +39,25 @@ namespace NeoToMongo
                 }
             }
         }
+
+        public static void handleTxItem(int blockindex, DateTime blockTime, MyJson.JsonNode_Object txItem)
+        {
+            var vout_tx = txItem["vout"].AsList();
+            if(vout_tx.Count>0)
+            {
+                foreach (MyJson.JsonNode_Object voutitem in vout_tx)
+                {
+                    var assetID = voutitem["asset"].AsString();
+                    if (!Mongo.isDataExist(Collection, "id", assetID))
+                    {
+                        var resasset = Rpc.getassetstate(Config.NeoCliJsonRPCUrl, assetID.Replace("0x", "")).Result;
+                        if (resasset!=null)
+                        {
+                            Collection.InsertOne(BsonDocument.Parse(resasset.ToString()));
+                        }
+                    }
+                }
+            }
+        }
     }
 }

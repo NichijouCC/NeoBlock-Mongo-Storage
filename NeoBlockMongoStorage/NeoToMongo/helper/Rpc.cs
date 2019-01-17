@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -41,7 +42,7 @@ namespace NeoToMongo
             }
             catch (Exception err)
             {
-                var errorMsg = "failed to load block data.Info:" + err.ToString();
+                var errorMsg = "failed to get block. param(blockIndex):."+blockIndex+"Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
                 Log.WriteLog(errorMsg);
                 return null;
@@ -50,17 +51,17 @@ namespace NeoToMongo
 
         async public static Task<MyJson.JsonNode_Object> getassetstate(string url,string assetid)
         {
-            var gstr = makeRpcUrlGet(url, "getassetstate",assetid);
+            var gstr = MakeRpcUrlPost("getassetstate",assetid);
             try
             {
-                var str = await getData(gstr);
+                var str = await postData(url,gstr);
                 var json = MyJson.Parse(str);
                 var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
                 return result;
             }
             catch (Exception err)
             {
-                var errorMsg = "failed to get asset state.Info:" + err.ToString();
+                var errorMsg = "failed to get asset state,param(assetid):"+assetid+".Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
                 Log.WriteLog(errorMsg);
                 return null;
@@ -73,13 +74,22 @@ namespace NeoToMongo
             try
             {
                 var str = await postData(url,gstr);
-                var json = MyJson.Parse(str);
-                var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
-                return result;
+                var json = MyJson.Parse(str) as MyJson.JsonNode_Object;
+                if(json["error"]!=null)
+                {
+                    var errorMsg = "failed to get application log."+"param(txid):"+txid+"error:" + json["error"].ToString();
+                    Console.WriteLine(errorMsg);
+                    Log.WriteLog(errorMsg);
+                    return null;
+                }else
+                {
+                    var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
+                    return result;
+                }
             }
             catch (Exception err)
             {
-                var errorMsg = "failed to get application log.Info:" + err.ToString();
+                var errorMsg = "failed to get application log." + "param(txid):" + txid + err.ToString();
                 Console.WriteLine(errorMsg);
                 Log.WriteLog(errorMsg);
                 return null;
@@ -98,7 +108,7 @@ namespace NeoToMongo
             }
             catch (Exception err)
             {
-                var errorMsg = "failed to get full log info.Info:" + err.ToString();
+                var errorMsg = "failed to get full log info.param(txid):"+txid+".Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
                 Log.WriteLog(errorMsg);
                 return null;
@@ -144,7 +154,7 @@ namespace NeoToMongo
             }
             catch (Exception err)
             {
-                var errorMsg = "failed to invokescript.Info:" + err.ToString();
+                var errorMsg = "failed to invokescript method:"+method+".Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
                 Log.WriteLog(errorMsg);
                 return null;
@@ -201,20 +211,46 @@ namespace NeoToMongo
         /// <returns></returns>
         async static Task<string> getData(string url)
         {
-            var wc = new WebClient();
-            var str = await wc.DownloadStringTaskAsync(url);
+            //var wc = new WebClient();
+            //var str = await wc.DownloadStringTaskAsync(url);
+            var str = await httpGetData(url);
             return str;
         }
 
         async static Task<string> postData(string url,string postData)
         {
-            byte[] postdata = System.Text.Encoding.UTF8.GetBytes(postData);
+            //byte[] postdata = System.Text.Encoding.UTF8.GetBytes(postData);
 
-            WebClient wc = new WebClient();
-            wc.Encoding = Encoding.UTF8;
-            wc.Headers.Add("content-type", "text/plain;charset=UTF-8");
-            byte[] retdata = await wc.UploadDataTaskAsync(url, "POST", postdata);
-            return System.Text.Encoding.UTF8.GetString(retdata);
+            //WebClient wc = new WebClient();
+            //wc.Encoding = Encoding.UTF8;
+            //wc.Headers.Add("content-type", "text/plain;charset=UTF-8");
+            //byte[] retdata = await wc.UploadDataTaskAsync(url, "POST", postdata);
+            //return System.Text.Encoding.UTF8.GetString(retdata);
+
+            string str = await httpPostData(url,postData);
+            return str;
+        }
+
+
+        public static HttpClient wc = new HttpClient();
+        async static Task<string> httpPostData(string url, string data)
+        {
+            //HttpClient wc = new HttpClient();
+            HttpResponseMessage httpResponseMessage =await wc.PostAsync(url, new StringContent(data));
+            string json =await httpResponseMessage.Content.ReadAsStringAsync();
+            return json;
+        }
+        async static Task<string> httpGetData(string url)
+        {
+            
+            var request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri(url),
+                Method = HttpMethod.Get,
+            };
+            HttpResponseMessage httpResponseMessage = await wc.SendAsync(request);
+            string json = await httpResponseMessage.Content.ReadAsStringAsync();
+            return json;
         }
     }
 }

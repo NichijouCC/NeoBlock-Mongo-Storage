@@ -46,5 +46,52 @@ namespace NeoToMongo
                 }
             }
         }
+
+        public static void handleTxItem(int blockindex, DateTime blockTime, MyJson.JsonNode_Object txItem)
+        {
+            if (txItem["type"].AsString() == "InvocationTransaction")
+            {
+                string txid = txItem["txid"].AsString();
+
+                var quaryArr = Mongo.Find(Collection, "txid", txid);
+                MyJson.JsonNode_Object targetNotify;
+                if(quaryArr.Count==0)
+                {
+                    targetNotify = Rpc.getapplicationlog(Config.NeoCliJsonRPCUrl, txid).Result;
+                    if (targetNotify != null)
+                    {
+                        Collection.InsertOne(BsonDocument.Parse(targetNotify.ToString()));
+                    }
+                }else
+                {
+                    targetNotify =MyJson.Parse(quaryArr[0].ToJson()) as MyJson.JsonNode_Object;
+                }
+
+                //todo handleNep5
+                if(targetNotify != null)
+                {
+                    var executionItem = targetNotify["executions"].AsList()[0].AsDict();
+                    var besucced = executionItem["vmstate"].AsString();
+                    if (besucced != "FAULT, BREAK")
+                    {
+                        var ntfArr = executionItem["notifications"].AsList();
+                        if (ntfArr.Count > 0)
+                        {
+                            for (int i = 0; i < ntfArr.Count; i++)
+                            {
+                                var ntfItem = ntfArr[i] as MyJson.JsonNode_Object;
+                                if (NEP5.beTransfer(ntfItem))
+                                {
+                                    handleNEP5Asset.handle(ntfItem);
+                                    handleNEP5Transfer.handle(blockindex, blockTime, txid, i, ntfItem);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+            }
+        }
     }
 }

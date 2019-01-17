@@ -64,14 +64,14 @@ namespace NeoToMongo
             }
         }
 
-        public static void handle(int blockindex, string VoutVin_addr, string VoutVin_txid, DateTime blockTime)
+        static void handle(int blockindex, string VoutVin_addr, string VoutVin_txid, DateTime blockTime)
         {
             //var findBson = BsonDocument.Parse("{addr:'" + VoutVin_addr + "'}");
             //var queryAddr = Collection.Find(findBson).ToList();
             var queryAddr = Mongo.Find(Collection, "addr", VoutVin_addr);
 
             Address addressItem;
-            if(queryAddr.Count==0)
+            if (queryAddr.Count == 0)
             {
                 Address addr = new Address
                 {
@@ -124,6 +124,46 @@ namespace NeoToMongo
             //handle addresstx
             handleAddressTx.handle(addressItem);
 
+        }
+
+
+        public static void handleTxItem(int blockindex, DateTime blockTime, MyJson.JsonNode_Object item)
+        {
+            string txid = item["txid"].AsString();
+            var vout_tx = item["vout"].AsList();
+            var vint_tx = item["vin"].AsList();
+            if (vout_tx.Count > 0)
+            {
+                foreach (MyJson.JsonNode_Object voutitem in vout_tx)
+                {
+                    var addr = voutitem["address"].AsString();
+                    handleAddress.handle(blockindex, addr, txid, blockTime);
+                }
+            }
+
+            if(vint_tx.Count>0)
+            {
+                foreach (MyJson.JsonNode_Object vinitem in vint_tx)
+                {
+                    string voutTx = vinitem["txid"].AsString();
+                    int voutN = vinitem["vout"].AsInt();
+                    var quryarr = Mongo.Find(handleTx.Collection, "txid", voutTx);
+                    var voutarr = quryarr[0]["vout"].AsBsonArray;
+                    foreach (var _vout in voutarr)
+                    {
+                        if ((int)_vout["n"] == voutN)
+                        {
+                            var addr = _vout["address"].AsString;
+                            handleAddress.handle(blockindex, addr, txid, blockTime);
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void HandleNotifyItem(int blockindex, string VoutVin_addr, string VoutVin_txid, DateTime blockTime)
+        {
+            handle(blockindex,VoutVin_addr,VoutVin_txid,blockTime);
         }
     }
 }

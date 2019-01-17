@@ -4,6 +4,8 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NeoToMongo
 {
@@ -22,44 +24,21 @@ namespace NeoToMongo
                 return _Collection;
             }
         }
-        public static MyJson.JsonNode_Object handle(int height)
+        async public static Task<MyJson.JsonNode_Object> handle(int height)
         {
-            //if(!Mongo.isDataExist(Collection, "index", height))
-            //{
-            //    var blockData =Rpc.getblock(Config.NeoCliJsonRPCUrl, height).Result;
-            //    blockData.Remove("confirmations");
-            //    blockData.Remove("nextblockhash");
-
-            //    Collection.InsertOne(BsonDocument.Parse(blockData.ToString()));
-
-            //    return blockData;
-            //}else
-            //{
-            //   var query= Mongo.Find(Collection,"index",height);
-            //    BsonDocument queryB = query[0].AsBsonDocument;
-            //    //queryB.Remove("_id");
-            //    //queryB.Remove("nonce");
-            //    var jsonWriterSettings = new JsonWriterSettings { OutputMode = JsonOutputMode.Strict };
-            //    MyJson.JsonNode_Object block = MyJson.Parse(queryB.ToJson(jsonWriterSettings)) as MyJson.JsonNode_Object;
-            //    return block;
-            //}
-            var counter = Mongo.GetSystemCounter(collectionType);
-            if(counter.lastBlockindex<height)
+            var queryArr=Mongo.Find(Collection, "index", height);
+            if(queryArr.Count==0)
             {
-                var blockData = Rpc.getblock(Config.NeoCliJsonRPCUrl, height).Result;
+                var blockData = await Rpc.getblock(Config.NeoCliJsonRPCUrl, height);
                 blockData.Remove("confirmations");
                 blockData.Remove("nextblockhash");
 
                 Collection.InsertOne(BsonDocument.Parse(blockData.ToString()));
                 Mongo.SetSystemCounter(collectionType, height);
                 return blockData;
-            }
-            else
+            }else
             {
-                var query = Mongo.Find(Collection, "index", height);
-                BsonDocument queryB = query[0].AsBsonDocument;
-                //queryB.Remove("_id");
-                //queryB.Remove("nonce");
+                BsonDocument queryB = queryArr[0].AsBsonDocument;
                 var jsonWriterSettings = new JsonWriterSettings { OutputMode = JsonOutputMode.Strict };
                 MyJson.JsonNode_Object block = MyJson.Parse(queryB.ToJson(jsonWriterSettings)) as MyJson.JsonNode_Object;
                 return block;

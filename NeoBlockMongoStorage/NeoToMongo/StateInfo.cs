@@ -6,38 +6,9 @@ namespace NeoToMongo
 {
     class StateInfo
     {
-        private static int _currentBlock=0;
-        public static int currentBlockHeight
-        {
-            get
-            {
-                return _currentBlock;
-            }
-            set
-            {
-                _currentBlock = value;
-            }
-        }
+        public static int loadedBlockHeight = 0;
+        public static int handledBlockCount = 0;
 
-        private static Dictionary<string, Mongo.Couter> info;
-
-        public static void stop()
-        {
-
-        }
-
-        public static void init()
-        {
-            if(info==null)
-            {
-                info = new Dictionary<string, Mongo.Couter>();
-            }
-            info.Add(handleBlock.collectionType, Mongo.GetSystemCounter(handleBlock.collectionType));
-            info.Add(handleTx.collectionType, Mongo.GetSystemCounter(handleTx.collectionType));
-        }
-
-
-
-
+        public static int currentBlockHeight = 0;
     }
 }

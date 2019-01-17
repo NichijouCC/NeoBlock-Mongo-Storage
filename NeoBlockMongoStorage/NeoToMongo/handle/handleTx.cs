@@ -23,7 +23,7 @@ namespace NeoToMongo
             }
         }
 
-        public static void handle(MyJson.JsonNode_Object blockData)
+        async public static Task handle(MyJson.JsonNode_Object blockData)
         {
             int blockindex = blockData["index"].AsInt();
             var blockTx = blockData["tx"].AsList();
@@ -32,18 +32,41 @@ namespace NeoToMongo
 
             List<BsonDocument> listbson = new List<BsonDocument>();
 
-            var count = Mongo.GetSystemCounter(collectionType);
-            int startTxIndex = count.lastBlockindex < blockindex ? 0:count.lastTxindex;
-
-            for(
-                int i= startTxIndex; i< blockTx.Count;i++)
+            for(int i= 0; i< blockTx.Count;i++)
             {
                 var item = blockTx[i] as MyJson.JsonNode_Object;
-                item.AsDict().SetDictValue("blockindex", blockindex);
-                listbson.Add(BsonDocument.Parse(item.ToString()));
-                Collection.InsertOne(BsonDocument.Parse(item.ToString()));
 
-                Mongo.SetSystemCounter(collectionType,blockindex,i);
+                var quaryArr=Mongo.Find(Collection, "txid", item["txid"].AsString());
+                if(quaryArr.Count==0)
+                {
+                    item.SetDictValue("txindex", i);
+                    item.AsDict().SetDictValue("blockindex", blockindex);
+                    listbson.Add(BsonDocument.Parse(item.ToString()));
+                    Collection.InsertOne(BsonDocument.Parse(item.ToString()));
+                    Mongo.SetSystemCounter(collectionType, blockindex, i);
+                }else
+                {
+                    item.SetDictValue("txindex", i);
+                    item.AsDict().SetDictValue("blockindex", blockindex);
+                }
+
+                {
+                    Task task1 = Task.Factory.StartNew(() =>
+                    {
+                        handleAsset.handleTxItem(blockindex, blockTime, item);
+                    });
+                    Task task2 = Task.Factory.StartNew(() =>
+                    {
+                        HandleUtxo.handleTxItem(blockindex, blockTime, item);
+                    });
+                    Task task3 = Task.Factory.StartNew(() =>
+                    {
+                        handleNotify.handleTxItem(blockindex, blockTime, item);
+                    });
+                    await Task.WhenAll(task1,task2,task3);
+                    //handleAddress.handleTxItem(blockindex, blockTime, item);
+                }
+
                 //HandleUtxo.handle2(blockindex, blockTime,item);
                 //Task.Run(() =>
                 //{

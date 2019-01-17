@@ -57,122 +57,7 @@ namespace NeoToMongo
             }
         }
 
-        public static void handle(MyJson.JsonNode_Object blockData)
-        {
-            int blockindex = blockData["index"].AsInt();
-            var blockTx = blockData["tx"].AsList();
-            var blockTimeTS = blockData["time"].AsInt();
-            DateTime blockTime = TimeZoneInfo.ConvertTime(new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc), TimeZoneInfo.Local).AddSeconds(blockTimeTS);
-
-            foreach (MyJson.JsonNode_Object item in blockTx)
-            {
-                string txid=item["txid"].AsString();
-                var vin_tx = item["vin"].AsList();
-                var vout_tx = item["vout"].AsList();
-
-                if(vout_tx.Count>0)
-                {
-                    foreach(MyJson.JsonNode_Object voutitem in vout_tx)
-                    {
-                        UTXO utxo = new UTXO
-                        {
-                            addr = voutitem["address"].AsString(),
-                            txid = txid,
-                            n = voutitem["n"].AsInt(),
-                            asset = voutitem["asset"].AsString(),
-                            value = decimal.Parse(voutitem["value"].AsString()),
-                            createHeight = blockindex
-                        };
-                        Collection.InsertOne(utxo);
-
-                        //入庫新資產
-                        Task.Run(()=>
-                        {
-                            var assetid = voutitem["asset"].AsString();
-                            handleAsset.handle(assetid);
-                        });
-
-                        Task.Run(()=> {
-                            var addr = voutitem["address"].AsString();
-                            handleAddress.handle(blockindex, addr, txid, blockTime);
-                        });
-                    }
-                }
-
-                if(vin_tx.Count>0)
-                {
-                    for(var i=0;i<vin_tx.Count;i++)
-                    {
-                        var vinitem = vin_tx[i] as MyJson.JsonNode_Object;
-                        string voutTx = vinitem["txid"].AsString();
-                        int voutN = vinitem["vout"].AsInt();
-
-                        //查找UTXO创建记录
-                        string findStr = "{{txid:'{0}',n:{1}}}";
-                        findStr = string.Format(findStr, voutTx, voutN);
-                        BsonDocument findB = BsonDocument.Parse(findStr);
-                        UTXO utxo = Collection.Find(findB).ToList()[0];
-
-                        if(utxo!=null)
-                        {
-                            utxo.used = txid;
-                            utxo.useHeight = blockindex;
-                            Collection.ReplaceOne(findB,utxo);
-                        }else
-                        {
-                            Console.WriteLine("ERROR: 找utxo失敗,txid:"+txid+"   vin index:"+i);
-                            Log.WriteLog("ERROR: 找utxo失敗,txid:" + txid + "   vin index:" + i);
-                        }
-
-                        Task.Run(() =>
-                        {
-                            var quryarr=Mongo.Find(handleTx.Collection,"txid", voutTx);
-                            var voutarr=quryarr[0]["vout"].AsBsonArray;
-                            foreach(var _vout in voutarr)
-                            {
-                                if((int)_vout["n"]==voutN)
-                                {
-                                    var addr = _vout["address"].AsString;
-                                    handleAddress.handle(blockindex, addr, txid, blockTime);
-                                }
-                            }
-                        });
-                    }
-                }
-
-                //记录GAS领取
-                if (item.ContainsKey("claims"))
-                {
-                   var claims=item["claims"].AsList();
-                    if(claims.Count>0)
-                    {
-                        foreach( MyJson.JsonNode_Object claimItem in claims)
-                        {
-                            string voutTx = claimItem["txid"].AsString();
-                            int voutN = claimItem["vout"].AsInt();
-
-                            //查找UTXO创建记录
-                            string findStr = "{{txid:'{0}',n:{1}}}";
-                            findStr = string.Format(findStr, voutTx, voutN);
-                            BsonDocument findB = BsonDocument.Parse(findStr);
-                            UTXO utxo = Collection.Find(findB).ToList()[0];
-                            if (utxo != null)
-                            {
-                                utxo.claimed = txid;
-                                Collection.ReplaceOne(findB, utxo);
-                            }
-                            else
-                            {
-                                Console.WriteLine("ERROR:claims 找utxo失敗,txid:" + txid);
-                                Log.WriteLog("ERROR:claims 找utxo失敗,txid:" + txid);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        public static void handle2(int blockindex, DateTime blockTime, MyJson.JsonNode_Object item)
+        public static void handleTxItem(int blockindex, DateTime blockTime, MyJson.JsonNode_Object item)
         {
             //int blockindex = blockData["index"].AsInt();
             //var blockTx = blockData["tx"].AsList();
@@ -189,29 +74,31 @@ namespace NeoToMongo
                 {
                     foreach (MyJson.JsonNode_Object voutitem in vout_tx)
                     {
-                        UTXO utxo = new UTXO
+                        string findStr = "{{txid:'{0}',n:{1}}}";
+                        findStr = string.Format(findStr, txid, voutitem["n"].AsInt());
+                        BsonDocument findB = BsonDocument.Parse(findStr);
+                        var quaryArr = Collection.Find(findB).ToList();
+                        if(quaryArr.Count==0)
                         {
-                            addr = voutitem["address"].AsString(),
-                            txid = txid,
-                            n = voutitem["n"].AsInt(),
-                            asset = voutitem["asset"].AsString(),
-                            value = decimal.Parse(voutitem["value"].AsString()),
-                            createHeight = blockindex
-                        };
-                        Collection.InsertOne(utxo);
-
-                        //入庫新資產
-                        Task.Run(() =>
+                            UTXO utxo = new UTXO
+                            {
+                                addr = voutitem["address"].AsString(),
+                                txid = txid,
+                                n = voutitem["n"].AsInt(),
+                                asset = voutitem["asset"].AsString(),
+                                value = decimal.Parse(voutitem["value"].AsString()),
+                                createHeight = blockindex
+                            };
+                            Collection.InsertOne(utxo);
+                        }else
                         {
-                            var assetid = voutitem["asset"].AsString();
-                            handleAsset.handle(assetid);
-                        });
-
-                        Task.Run(() =>
-                        {
-                            var addr = voutitem["address"].AsString();
-                            handleAddress.handle(blockindex, addr, txid, blockTime);
-                        });
+                            UTXO utxo = quaryArr[0];
+                            utxo.addr = voutitem["address"].AsString();
+                            utxo.asset = voutitem["asset"].AsString();
+                            utxo.value = decimal.Parse(voutitem["value"].AsString());
+                            utxo.createHeight = blockindex;
+                            Collection.ReplaceOne(findB, utxo);
+                        }
                     }
                 }
 
@@ -227,33 +114,26 @@ namespace NeoToMongo
                         string findStr = "{{txid:'{0}',n:{1}}}";
                         findStr = string.Format(findStr, voutTx, voutN);
                         BsonDocument findB = BsonDocument.Parse(findStr);
-                        UTXO utxo = Collection.Find(findB).ToList()[0];
+                        var quaryArr = Collection.Find(findB).ToList();
 
-                        if (utxo != null)
+                        if (quaryArr.Count!=0)
                         {
+                            UTXO utxo = quaryArr[0];
                             utxo.used = txid;
                             utxo.useHeight = blockindex;
                             Collection.ReplaceOne(findB, utxo);
                         }
                         else
                         {
-                            Console.WriteLine("ERROR: 找utxo失敗,txid:" + txid + "   vin index:" + i);
-                            Log.WriteLog("ERROR: 找utxo失敗,txid:" + txid + "   vin index:" + i);
-                        }
-
-                        Task.Run(() =>
-                        {
-                            var quryarr = Mongo.Find(handleTx.Collection, "txid", voutTx);
-                            var voutarr = quryarr[0]["vout"].AsBsonArray;
-                            foreach (var _vout in voutarr)
+                            UTXO utxo = new UTXO()
                             {
-                                if ((int)_vout["n"] == voutN)
-                                {
-                                    var addr = _vout["address"].AsString;
-                                    handleAddress.handle(blockindex, addr, txid, blockTime);
-                                }
-                            }
-                        });
+                                txid = voutTx,
+                                n = voutN,
+                                used = txid,
+                                useHeight = blockindex
+                            };
+                            Collection.InsertOne(utxo);
+                        }
                     }
                 }
 
@@ -272,16 +152,23 @@ namespace NeoToMongo
                             string findStr = "{{txid:'{0}',n:{1}}}";
                             findStr = string.Format(findStr, voutTx, voutN);
                             BsonDocument findB = BsonDocument.Parse(findStr);
-                            UTXO utxo = Collection.Find(findB).ToList()[0];
-                            if (utxo != null)
+                            //UTXO utxo = Collection.Find(findB).ToList()[0];
+                            var quaryArr = Collection.Find(findB).ToList();
+                            if (quaryArr.Count != 0)
                             {
+                                UTXO utxo = quaryArr[0];
                                 utxo.claimed = txid;
                                 Collection.ReplaceOne(findB, utxo);
                             }
                             else
                             {
-                                Console.WriteLine("ERROR:claims 找utxo失敗,txid:" + txid);
-                                Log.WriteLog("ERROR:claims 找utxo失敗,txid:" + txid);
+                                UTXO utxo = new UTXO()
+                                {
+                                    txid = voutTx,
+                                    n = voutN,
+                                    claimed = txid,
+                                };
+                                Collection.InsertOne(utxo);
                             }
                         }
                     }
