@@ -9,6 +9,9 @@ namespace NeoToMongo
         public static int loadedBlockHeight = 0;
         public static int handledBlockCount = 0;
 
-        public static int currentBlockHeight = 0;
+        public static int HandlingBlockCount = 0;
+        public static int HandledBlockCount =0;
+        public static int remoteBlockHeight = 0;
+
     }
 }

@@ -34,7 +34,7 @@ namespace NeoToMongo
                 blockData.Remove("nextblockhash");
 
                 Collection.InsertOne(BsonDocument.Parse(blockData.ToString()));
-                Mongo.SetSystemCounter(collectionType, height);
+                //Mongo.SetSystemCounter(collectionType, height);
                 return blockData;
             }else
             {

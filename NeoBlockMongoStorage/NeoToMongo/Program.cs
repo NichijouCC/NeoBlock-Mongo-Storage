@@ -34,15 +34,15 @@ namespace NeoToMongo
                 try
                 {
                     int blockHeight = await Rpc.getblockcount(Config.NeoCliJsonRPCUrl) - 1;
-                    if (blockHeight >= 0 && StateInfo.currentBlockHeight < blockHeight)
+                    StateInfo.remoteBlockHeight = blockHeight;
+
+                    if (blockHeight >= 0 && StateInfo.HandlingBlockCount < blockHeight)
                     {
-                        //Console.WriteLine("block count: " + blockcount);
-                        await SyncBlockToHeight(StateInfo.currentBlockHeight + 1, blockHeight);
+                        await SyncBlockToHeight(StateInfo.HandlingBlockCount + 1, blockHeight);
                     }
                     else
                     {
-                        await Task.Delay(5000);
-                        continue;
+                        Thread.Sleep(100);
                     }
                 }
                 catch(Exception e)
@@ -50,7 +50,7 @@ namespace NeoToMongo
                     Console.WriteLine("async block:"+e.Message);
                     beActive = false;
 
-                    await Task.Delay(5000);
+                    Thread.Sleep(5000);
                 }
             }
         }
@@ -58,18 +58,25 @@ namespace NeoToMongo
         async static Task SyncBlockToHeight(int fromHeight, int toHeight)
         {
             List<Task> taskArr = new List<Task>();
+            int taskCount = 5;
             for (int i = fromHeight; i <= toHeight; i++)
             {
-                Task newtask = Task.Factory.StartNew( async() =>
+                var j = i;
+                Task newtask = Task.Factory.StartNew(async () =>
                 {
-                    var blockData = handleBlock.handle(i);
-                    await handleTx.handle(blockData);
-                    StateInfo.currentBlockHeight++;
+                    Thread.Sleep(((j-fromHeight)%taskCount)*3);
+                    var blockData = await handleBlock.handle(j);
+                    Task.Run(async () =>
+                    {
+                        await handleTx.handle(blockData);
+                        StateInfo.HandledBlockCount++;
+                    });
                 });
                 taskArr.Add(newtask);
 
-                if(taskArr.Count>=50|| taskArr.Count+ toHeight - fromHeight <50)
+                if(taskArr.Count>=5||i==toHeight)
                 {
+                    StateInfo.HandlingBlockCount += taskArr.Count;
                     await Task.WhenAll(taskArr);
                     taskArr.Clear();
                 }

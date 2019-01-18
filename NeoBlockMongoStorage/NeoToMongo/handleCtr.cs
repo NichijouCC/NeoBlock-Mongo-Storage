@@ -15,7 +15,7 @@ namespace NeoToMongo
                 var blockdata=await handleBlock.handle(i);
                 Task.Run(async()=> {
                     await handleTx.handle(blockdata);
-                    StateInfo.currentBlockHeight++;
+                    StateInfo.HandledBlockCount++;
                 });
             }
         }

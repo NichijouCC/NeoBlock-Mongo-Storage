@@ -34,12 +34,21 @@ namespace NeoToMongo
                 if(txItem["type"].AsString() == "InvocationTransaction")
                 {
                     string txid = txItem["txid"].AsString();
-                    var resNotify = Rpc.getapplicationlog(Config.NeoCliJsonRPCUrl,txid).Result;
-                    if(resNotify!=null)
-                    {
-                        Collection.InsertOne(BsonDocument.Parse(resNotify.ToString()));
-                    }
 
+                    MyJson.JsonNode_Object resNotify;
+
+                    var quaryArr=Mongo.Find(Collection, "txid", txid);
+                    if(quaryArr.Count==0)
+                    {
+                        resNotify = Rpc.getapplicationlog(Config.NeoCliJsonRPCUrl, txid).Result;
+                        if (resNotify != null)
+                        {
+                            Collection.InsertOne(BsonDocument.Parse(resNotify.ToString()));
+                        }
+                    }else
+                    {
+                        resNotify =MyJson.Parse(quaryArr[0].ToJson()) as MyJson.JsonNode_Object;
+                    }
                     //todo handleNep5
                     handleNep5.handle(blockindex, blockTime,txid, resNotify);
 
@@ -64,6 +73,7 @@ namespace NeoToMongo
                     }
                 }else
                 {
+                    quaryArr[0].Remove("_id");
                     targetNotify =MyJson.Parse(quaryArr[0].ToJson()) as MyJson.JsonNode_Object;
                 }
 

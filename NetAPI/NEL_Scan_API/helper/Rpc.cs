@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NeoToMongo
+namespace NetAPI
 {
     class Rpc
     {
@@ -24,8 +24,6 @@ namespace NeoToMongo
             {
                 var errorMsg = "Fail to get block count.Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
-                Log.WriteLog(errorMsg);
-
                 return -1;
             }
         }
@@ -42,9 +40,8 @@ namespace NeoToMongo
             }
             catch (Exception err)
             {
-                var errorMsg = "failed to get block. param(blockIndex):."+blockIndex+"RemoteH:"+StateInfo.remoteBlockHeight+ "CurrentH:" + StateInfo.HandledBlockCount + "Info:" + err.ToString();
+                var errorMsg = "failed to get block. param(blockIndex):."+blockIndex + "Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
-                Log.WriteLog(errorMsg);
                 return null;
             }
         }
@@ -63,7 +60,6 @@ namespace NeoToMongo
             {
                 var errorMsg = "failed to get asset state,param(assetid):"+assetid+".Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
-                Log.WriteLog(errorMsg);
                 return null;
             }
         }
@@ -83,7 +79,6 @@ namespace NeoToMongo
             {
                 var errorMsg = "failed to get application log." + "param(txid):" + txid + "resStr:"+ str;
                 Console.WriteLine(errorMsg);
-                Log.WriteLog(errorMsg);
                 return null;
             }
         }
@@ -102,7 +97,6 @@ namespace NeoToMongo
             {
                 var errorMsg = "failed to get full log info.param(txid):"+txid+".Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
-                Log.WriteLog(errorMsg);
                 return null;
             }
         }
@@ -148,11 +142,28 @@ namespace NeoToMongo
             {
                 var errorMsg = "failed to invokescript method:"+method+".Info:" + err.ToString();
                 Console.WriteLine(errorMsg);
-                Log.WriteLog(errorMsg);
                 return null;
             }
         }
 
+        async public static Task<MyJson.JsonNode_Object> invokescript(string url, string script)
+        {
+            var urldata = MakeRpcUrlPost("invokescript", script);
+            //var res = await this.PostData(urldata);
+            try
+            {
+                var str = await postData(url, urldata);
+                var json = MyJson.Parse(str);
+                var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
+                return result;
+            }
+            catch (Exception err)
+            {
+                var errorMsg = "failed to invokescript"+".Info:" + err.ToString();
+                Console.WriteLine(errorMsg);
+                return null;
+            }
+        }
 
         /// <summary>
         /// 拼装 url  get

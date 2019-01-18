@@ -36,15 +36,15 @@ namespace NeoToMongo
             {
                 var item = blockTx[i] as MyJson.JsonNode_Object;
 
-                var quaryArr=Mongo.Find(Collection, "txid", item["txid"].AsString());
-                if(quaryArr.Count==0)
-                {
-                    item.SetDictValue("txindex", i);
-                    item.AsDict().SetDictValue("blockindex", blockindex);
-                    listbson.Add(BsonDocument.Parse(item.ToString()));
-                    Collection.InsertOne(BsonDocument.Parse(item.ToString()));
-                    Mongo.SetSystemCounter(collectionType, blockindex, i);
-                }else
+                //var quaryArr=Mongo.Find(Collection, "txid", item["txid"].AsString());
+                //if(quaryArr.Count==0)
+                //{
+                //    item.SetDictValue("txindex", i);
+                //    item.AsDict().SetDictValue("blockindex", blockindex);
+                //    listbson.Add(BsonDocument.Parse(item.ToString()));
+                //    Collection.InsertOne(BsonDocument.Parse(item.ToString()));
+                //    //Mongo.SetSystemCounter(collectionType, blockindex, i);
+                //}else
                 {
                     item.SetDictValue("txindex", i);
                     item.AsDict().SetDictValue("blockindex", blockindex);
@@ -66,15 +66,7 @@ namespace NeoToMongo
                     await Task.WhenAll(task1,task2,task3);
                     //handleAddress.handleTxItem(blockindex, blockTime, item);
                 }
-
-                //HandleUtxo.handle2(blockindex, blockTime,item);
-                //Task.Run(() =>
-                //{
-                //    string txid = item["txid"].AsString();
-                //    handleFullLog.handle(txid);
-                //});
             }
-
             //if(listbson.Count>0)
             //{
             //   Collection.InsertMany(listbson);
