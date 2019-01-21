@@ -54,6 +54,7 @@ namespace NetAPI.services
                 new JObject(){{"count", count }, { "list", query}}
             };
         }
+
         public JArray gettransactionlist(int pageNum = 1, int pageSize = 10, string type = "")
         {
             string findStr = "{}";
@@ -175,35 +176,21 @@ namespace NetAPI.services
                 };
         }
 
-        private JArray getAddressUtxoAsset(string address,List<string> assetId=null)
+        public JArray getAddressAssetUtxo(string address,string assetId)
         {
-
-            JArray utxoArr;
-            if(assetId==null)
-            {
-                string findStr = "{{addr:'{0}',used:{1}}}";
-                findStr = string.Format(findStr, address, "","{"+assetId.ToString()+"}");
-                utxoArr = mh.GetData(Block_mongodbConnStr, Block_mongodbDatabase, "utxo", findStr);
-            }
-            else
-            {
-                string findStr = "{{addr:'{0}',used:{1},asset:'{2}'}}";
-                findStr = string.Format(findStr, address,"");
-                utxoArr = mh.GetData(Block_mongodbConnStr, Block_mongodbDatabase, "utxo", findStr);
-            }
+            string findStr = "{{addr:'{0}',used:'{1}',asset:'{2}'}}";
+            findStr = string.Format(findStr, address, "",assetId);
+            JArray utxoArr = mh.GetData(Block_mongodbConnStr, Block_mongodbDatabase, "utxo", findStr);
 
             Dictionary<string, List<JObject>> assetDic = new Dictionary<string, List<JObject>>();
             foreach (JObject utxoitem in utxoArr)
             {
                 string assetid = utxoitem["asset"].ToString();
-                if (assetDic.ContainsKey(assetid))
-                {
-                    assetDic[assetid].Add(utxoitem);
-                }
-                else
+                if (!assetDic.ContainsKey(assetid))
                 {
                     assetDic[assetid] = new List<JObject>();
                 }
+                assetDic[assetid].Add(utxoitem);
             }
             JArray result = new JArray();
             foreach(var item in assetDic)
@@ -211,7 +198,8 @@ namespace NetAPI.services
                 JObject assetarr = new JObject();
                 result.Add(assetarr);
                 JArray utxarr = new JArray();
-                assetarr.Add(item.Key, utxarr);
+                assetarr.Add("asset", item.Key);
+                assetarr.Add("arr", utxarr);
                 foreach(var utxo in item.Value)
                 {
                     utxarr.Add(utxo);

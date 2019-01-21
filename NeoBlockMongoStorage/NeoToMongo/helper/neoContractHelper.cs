@@ -26,7 +26,7 @@ namespace NeoToMongo
                 //string resNotify = chh.Post(apiUrl, postDataStr, Encoding.UTF8,1);
 
                 var resNotify=Rpc.invokescript(apiUrl,scripthash, method).Result;
-                string valueHex = resNotify.AsList()[0].AsDict()["stack"].AsList()[0].AsDict()["value"].AsString();
+                string valueHex = resNotify.AsDict()["stack"].AsList()[0].AsDict()["value"].AsString();
                 //string valueHex = (string)JObject.Parse(resNotify)["result"][0]["stack"][0]["value"];
 
                 result = valueHex;

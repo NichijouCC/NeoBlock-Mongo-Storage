@@ -26,7 +26,7 @@ namespace NeoToMongo
 
         static void showBlockCount()
         {
-            Console.WriteLine("current handled Block count:{0}/{1}",StateInfo.remoteBlockHeight, StateInfo.HandledBlockCount);
+            Console.WriteLine("current handled Block count: 高度{0}/处理中{1}/处理完{2}",StateInfo.remoteBlockHeight,StateInfo.HandlingBlockCount, StateInfo.HandledBlockCount);
             //showCollecTionCouterInfo(handleBlock.collectionType);
             //showCollecTionCouterInfo(handleTx.collectionType);
 

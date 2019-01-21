@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="thinSDK">
+      <HintPath>dll\thinSDK.dll</HintPath>
+    </Reference>
+    <Reference Include="thinSDK_neo">
+      <HintPath>dll\thinSDK_neo.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

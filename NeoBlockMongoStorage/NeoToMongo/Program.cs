@@ -14,6 +14,8 @@ namespace NeoToMongo
         {
             loadConfig();
 
+            StateInfo.init();
+
             MongoIndexHelper.initIndex(Config.mongodbConnStr,Config.mongodbDatabase);
 
             Log.clearLog();
@@ -66,7 +68,7 @@ namespace NeoToMongo
                 {
                     Thread.Sleep(((j-fromHeight)%taskCount)*3);
                     var blockData = await handleBlock.handle(j);
-                    Task.Run(async () =>
+                    await Task.Run(async () =>
                     {
                         await handleTx.handle(blockData);
                         StateInfo.HandledBlockCount++;

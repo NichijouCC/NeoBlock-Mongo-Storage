@@ -39,15 +39,16 @@ namespace NetAPI.ctr
                 point(req.method);
                 switch (req.method)
                 {
-                    case "getutxolistbyaddress":
-                        if (req.@params.Length < 3)
-                        {
-                            result = transactionServer.getutxolistbyaddress(req.@params[0].ToString());
-                        }
-                        else
-                        {
-                            result = transactionServer.getutxolistbyaddress(req.@params[0].ToString(), int.Parse(req.@params[1].ToString()), int.Parse(req.@params[2].ToString()));
-                        }
+                    case "getassetutxobyaddress":
+
+                        //JsonPRCresponse ress = new JsonPRCresponse()
+                        //{
+                        //    jsonrpc = req.jsonrpc,
+                        //    id = req.id,
+                        //    result = new JArray() { new JObject() { { "result", "getMsg!!" } } }
+                        //};
+                        //return ress;
+                        result= transactionServer.getAddressAssetUtxo(req.@params[0].ToString(), req.@params[1].ToString());
                         break;
                     case "gettransactionlist":
                         if (req.@params.Length < 2)
@@ -64,7 +65,7 @@ namespace NetAPI.ctr
                         }
                         break;
                     case "sendrawtransaction":
-                        transactionServer.sendrawtransaction((string)req.@params[0]);
+                        result = transactionServer.sendrawtransaction((string)req.@params[0]);
                         break;
                 }
                 if (result.Count == 0)

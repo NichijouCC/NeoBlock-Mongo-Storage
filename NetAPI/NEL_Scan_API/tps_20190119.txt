@@ -1,0 +1,91 @@
+                            getutxolistbyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 11:05:03.880
+                            getutxolistbyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 11:05:50.730
+                            getutxolistbyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 11:07:36.552
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 16:57:45.995
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 16:58:21.029
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 16:58:42.873
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 17:00:08.496
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 17:00:55.037
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 17:02:45.889
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 17:03:08.957
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 17:04:20.717
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 17:22:20.480
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 17:32:44.910
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:17:52.752
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:20:25.861
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:21:31.907
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:24:35.038
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:25:50.086
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:26:22.118
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:27:48.217
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:28:25.280
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:28:35.295
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:37:47.659
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 18:40:08.755
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 18:42:00.753
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:03:34.638
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:03:35.657
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:04:08.687
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:07:01.812
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:10:01.932
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:11:07.981
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:12:16.024
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:13:43.087
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:17:40.225
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:17:44.233
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:17:45.237
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:17:47.242
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 19:24:43.550
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 19:25:07.568
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 19:25:32.590
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 19:26:03.611
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 19:26:30.632
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 19:28:24.718
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 19:28:30.729
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 19:35:53.033
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 20:46:13.721
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 21:14:47.744
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 21:15:07.765
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 21:15:11.768
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 21:15:13.773
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     1	20190119 21:15:16.778
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:15:47.800
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:15:51.803
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:20.826
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:22.833
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:23.838
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:24.843
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:25.847
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:26.851
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:28.856
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:29.860
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:16:30.867
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:36:12.722
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:36:48.761
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:37:41.801
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:38:10.826
+                           getassetutxobyaddress:      1/s, testnet=    0,mainnet=    1
+                              sendrawtransaction:      1/s, testnet=    0,mainnet=    1	sum:     2	20190119 21:44:43.095

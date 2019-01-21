@@ -39,6 +39,7 @@ namespace NeoToMongo
                 }
             }
         }
+        static object lockObj = new object();
 
         public static void handleTxItem(int blockindex, DateTime blockTime, MyJson.JsonNode_Object txItem)
         {
@@ -50,10 +51,16 @@ namespace NeoToMongo
                     var assetID = voutitem["asset"].AsString();
                     if (!Mongo.isDataExist(Collection, "id", assetID))
                     {
-                        var resasset = Rpc.getassetstate(Config.NeoCliJsonRPCUrl, assetID.Replace("0x", "")).Result;
-                        if (resasset!=null)
+                        lock(lockObj)
                         {
-                            Collection.InsertOne(BsonDocument.Parse(resasset.ToString()));
+                            if (!Mongo.isDataExist(Collection, "id", assetID))
+                            {
+                                var resasset = Rpc.getassetstate(Config.NeoCliJsonRPCUrl, assetID.Replace("0x", "")).Result;
+                                if (resasset != null)
+                                {
+                                    Collection.InsertOne(BsonDocument.Parse(resasset.ToString()));
+                                }
+                            }
                         }
                     }
                 }

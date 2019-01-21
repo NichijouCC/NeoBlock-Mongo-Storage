@@ -23,20 +23,27 @@ namespace NeoToMongo
                 return _Collection;
             }
         }
-
+        static object lockObj=new object();
         public static void handle(MyJson.JsonNode_Object notification)
         {
             string assetId = notification["contract"].AsString();
 
             //var findBsonNEP5AssetBson = BsonDocument.Parse("{assetid:'" + assetId + "'}");
             //var queryNEP5AssetBson = Collection.Find(findBsonNEP5AssetBson).ToList();
-            var queryNEP5AssetBson = Mongo.Find(Collection, "assetid", assetId);
 
-            if (queryNEP5AssetBson.Count == 0)
+            if (!Mongo.isDataExist(Collection, "assetid", assetId))
             {
-                NEP5.Asset asset = new NEP5.Asset(Config.NeoCliJsonRPCUrl, assetId);
-                Collection.InsertOne(asset);
+                lock (lockObj)
+                {
+                    if (!Mongo.isDataExist(Collection, "assetid", assetId))
+                    {
+                        NEP5.Asset asset = new NEP5.Asset(Config.NeoCliJsonRPCUrl, assetId);
+                        Collection.InsertOne(asset);
+                    }
+
+                }
             }
+
         }
     }
 }

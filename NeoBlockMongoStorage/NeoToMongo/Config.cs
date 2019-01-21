@@ -8,8 +8,10 @@ namespace NeoToMongo
         public static string mongodbConnStr = string.Empty;
         public static string mongodbDatabase = string.Empty;
         public static string NeoCliJsonRPCUrl = string.Empty;
-        public static int sleepTime = 0;
-        public static bool beUtxoSleep = false;
+        public static int startBlockHeight = 0;
+
+        //public static int sleepTime = 0;
+        //public static bool beUtxoSleep = false;
         /// <summary>
         /// 加载配置
         /// </summary>
@@ -20,7 +22,10 @@ namespace NeoToMongo
             mongodbConnStr = config.AsDict().GetDictItem("mongodbConnStr").AsString();
             mongodbDatabase = config.AsDict().GetDictItem("mongodbDatabase").AsString();
             NeoCliJsonRPCUrl = config.AsDict().GetDictItem("NeoCliJsonRPCUrl").AsString();
-            sleepTime = config.AsDict().GetDictItem("sleepTime").AsInt();
+            startBlockHeight = config.AsDict().GetDictItem("startBlockHeight").AsInt();
+
+            
+            //sleepTime = config.AsDict().GetDictItem("sleepTime").AsInt();
         }
 
     }
