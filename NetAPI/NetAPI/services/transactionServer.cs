@@ -208,7 +208,7 @@ namespace NetAPI.services
             return result;
         }
 
-        private decimal getAddressNep5Asset(string address, string nep5Hash)
+        public JArray getAddressNep5Asset(string address, string nep5Hash)
         {
             string script = null;
             using (var sb = new ThinNeo.ScriptBuilder())
@@ -234,12 +234,20 @@ namespace NetAPI.services
             JArray utxoArr=mh.GetData(Block_mongodbConnStr, Block_mongodbDatabase, "NEP5asset", findStr);
             int decimals=(int)((JObject)utxoArr[0])["decimals"];
 
-
             decimal value = decimal.Parse(Number.getNumStrFromHexStr(valueString, decimals));
 
-            return value;
+            return new JArray(new JObject() { { "value",value} });
         }
 
+        public JArray getnep5decimals(string nep5Hash)
+        {
+            string findStr = "{{assetid:'{0}'}}";
+            findStr = string.Format(findStr, nep5Hash);
+            JArray utxoArr = mh.GetData(Block_mongodbConnStr, Block_mongodbDatabase, "NEP5asset", findStr);
+            int decimals = (int)((JObject)utxoArr[0])["decimals"];
+
+            return new JArray(new JObject() { { "value", decimals } });
+        }
 
 
 

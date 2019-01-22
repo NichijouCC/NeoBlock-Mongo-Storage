@@ -35,6 +35,10 @@ namespace NetAPI
             {
                 var str = await getData(gstr);
                 var json = MyJson.Parse(str);
+                if (json.AsDict().ContainsKey("error"))
+                {
+                    return json.AsDict()["error"] as MyJson.JsonNode_Object;
+                }
                 var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
                 return result;
             }
@@ -53,6 +57,10 @@ namespace NetAPI
             {
                 var str = await postData(url,gstr);
                 var json = MyJson.Parse(str);
+                if (json.AsDict().ContainsKey("error"))
+                {
+                    return json.AsDict()["error"] as MyJson.JsonNode_Object;
+                }
                 var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
                 return result;
             }
@@ -72,6 +80,10 @@ namespace NetAPI
             {
                 str = await postData(url,gstr);
                 var json = MyJson.Parse(str) as MyJson.JsonNode_Object;
+                if (json.AsDict().ContainsKey("error"))
+                {
+                    return json.AsDict()["error"] as MyJson.JsonNode_Object;
+                }
                 var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
                 return result;
             }
@@ -90,6 +102,10 @@ namespace NetAPI
             {
                 var str = await postData(url, gstr);
                 var json = MyJson.Parse(str);
+                if (json.AsDict().ContainsKey("error"))
+                {
+                    return json.AsDict()["error"] as MyJson.JsonNode_Object;
+                }
                 var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
                 return result;
             }
@@ -135,6 +151,10 @@ namespace NetAPI
             {
                 var str = await postData(url, urldata);
                 var json = MyJson.Parse(str);
+                if (json.AsDict().ContainsKey("error"))
+                {
+                    return json.AsDict()["error"] as MyJson.JsonNode_Object;
+                }
                 var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
                 return result;
             }
@@ -154,6 +174,10 @@ namespace NetAPI
             {
                 var str = await postData(url, urldata);
                 var json = MyJson.Parse(str);
+                if (json.AsDict().ContainsKey("error"))
+                {
+                    return json.AsDict()["error"] as MyJson.JsonNode_Object;
+                }
                 var result = json.AsDict().GetDictItem("result") as MyJson.JsonNode_Object;
                 return result;
             }

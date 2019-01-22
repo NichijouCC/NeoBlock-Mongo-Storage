@@ -23,7 +23,7 @@ namespace NeoToMongo
             }
         }
 
-        async public static Task handle(MyJson.JsonNode_Object blockData)
+        public static void handle(MyJson.JsonNode_Object blockData)
         {
             int blockindex = blockData["index"].AsInt();
             var blockTx = blockData["tx"].AsList();
@@ -63,7 +63,7 @@ namespace NeoToMongo
                     {
                         handleNotify.handleTxItem(blockindex, blockTime, item);
                     });
-                    await Task.WhenAll(task1,task2,task3);
+                    Task.WaitAll(task1,task2,task3);
                     //handleAddress.handleTxItem(blockindex, blockTime, item);
                 }
             }

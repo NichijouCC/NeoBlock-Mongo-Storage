@@ -48,7 +48,7 @@ namespace TestNetAPI
 
     class APiTest
     {
-        static string apiurl = "http://localhost:54918/api/mainnet";
+        static string apiurl = "http://192.144.165.72:7878/api/mainnet";
 
         /// <summary>
         /// 测试gas交易
@@ -107,9 +107,6 @@ namespace TestNetAPI
             //-----------------获取地址的资产列表
             Dictionary<string, List<UTXO>> assets = getAssetUtxo(address, Asset.id_GAS);
 
-            Console.WriteLine("交易前账户余额：");
-            getNep5Balancebyaddress(apiurl, address, tokenScript);
-
             //--------------拼装交易
             ThinNeo.Transaction tran =makeTran(assets, new string[1] { targeraddr }, new ThinNeo.Hash256(id_GAS), decimal.Zero);
             tran.type = ThinNeo.TransactionType.InvocationTransaction;
@@ -140,21 +137,30 @@ namespace TestNetAPI
             var result = RPC.sendrawtransaction(apiurl, scripthash);
 
             Console.WriteLine(result.ToString());
-
-            Thread.Sleep(3000);
-            Console.WriteLine("交易后账户余额：");
-            getNep5Balancebyaddress(apiurl, address, tokenScript);
         }
 
-        private static void Test_quryNep5Balance()
+        public static void test_quryNep5Balance()
         {
             string tokenScript = Asset.id_pet;
 
             string wif1 = Account.wif;//地址 AU5kNBWTYepzfS76DBwGKW3E3aRuFjhmAc
             byte[] prikey = ThinNeo.Helper.GetPrivateKeyFromWIF(wif1);
             byte[] pubkey = ThinNeo.Helper.GetPublicKeyFromPrivateKey(prikey);
-            string address = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
-                    
+            string fromAddress = ThinNeo.Helper.GetAddressFromPublicKey(pubkey);
+
+            string toAddr = "AXdWU5vYe3Ja9n778RpgJrrCUjAsfQgT1r";
+
+            var frombalance=RPC.getnep5balancebyaddress(apiurl,fromAddress,tokenScript);
+            var tobalance = RPC.getnep5balancebyaddress(apiurl, toAddr, tokenScript);
+
+            if(frombalance!=null)
+            {
+                Console.WriteLine(frombalance.ToString());
+            }
+            if(tobalance!=null)
+            {
+                Console.WriteLine(tobalance.ToString());
+            }
         }
 
         /// <summary>
@@ -197,32 +203,6 @@ namespace TestNetAPI
             return assetDic;
         }
 
-        /// <summary>
-        /// 查询账户 nep5资产余额
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="address"></param>
-        /// <param name="assetID"></param>
-        public static void getNep5Balancebyaddress(string url, string address, string assetID)
-        {
-            string scripthash = assetID.Replace("0x", "");
-            string script = null;
-            using (var sb = new ThinNeo.ScriptBuilder())
-            {
-                ThinNeo.Hash160 shash = new ThinNeo.Hash160(scripthash);
-
-                MyJson.JsonNode_Array JAParams = new MyJson.JsonNode_Array();
-                JAParams.Add(new MyJson.JsonNode_ValueString("(address)" + address));
-                sb.EmitParamJson(JAParams);
-                sb.EmitParamJson(new MyJson.JsonNode_ValueString("(str)balanceOf"));
-                sb.EmitAppCall(shash);
-
-                var data = sb.ToArray();
-                script = ThinNeo.Helper.Bytes2HexString(data);
-            }
-            var res= RPC.invokescript(url,script) as MyJson.JsonNode_Object;
-            Console.WriteLine(res.ToString());
-        }
 
         //拼交易体
         public static ThinNeo.Transaction makeTran(Dictionary<string, List<UTXO>> assets, string[] targetaddrs, ThinNeo.Hash256 assetid, decimal sendcount)

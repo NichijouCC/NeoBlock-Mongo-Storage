@@ -67,6 +67,13 @@ namespace NetAPI.ctr
                     case "sendrawtransaction":
                         result = transactionServer.sendrawtransaction((string)req.@params[0]);
                         break;
+
+                    case "getnep5balancebyaddress":
+                        result = transactionServer.getAddressNep5Asset(req.@params[0].ToString(), req.@params[1].ToString());
+                        break;
+                    case "getnep5decimals":
+                        result = transactionServer.getnep5decimals(req.@params[0].ToString());
+                        break;
                 }
                 if (result.Count == 0)
                 {

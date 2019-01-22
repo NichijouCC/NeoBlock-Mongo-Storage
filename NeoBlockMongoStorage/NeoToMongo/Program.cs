@@ -40,7 +40,7 @@ namespace NeoToMongo
 
                     if (blockHeight >= 0 && StateInfo.HandlingBlockCount < blockHeight)
                     {
-                        await SyncBlockToHeight(StateInfo.HandlingBlockCount + 1, blockHeight);
+                        SyncBlockToHeight(StateInfo.HandlingBlockCount + 1, blockHeight);
                     }
                     else
                     {
@@ -56,31 +56,42 @@ namespace NeoToMongo
                 }
             }
         }
-
-        async static Task SyncBlockToHeight(int fromHeight, int toHeight)
+        static SpinLock spinlock = new SpinLock();
+        static void SyncBlockToHeight(int fromHeight, int toHeight)
         {
             List<Task> taskArr = new List<Task>();
             int taskCount = 5;
             for (int i = fromHeight; i <= toHeight; i++)
             {
                 var j = i;
-                Task newtask = Task.Factory.StartNew(async () =>
+                Task newtask = Task.Factory.StartNew(() =>
                 {
                     Thread.Sleep(((j-fromHeight)%taskCount)*3);
-                    var blockData = await handleBlock.handle(j);
-                    await Task.Run(async () =>
+
+                    //var blockData =await handleBlock.handle(j);
+                    var blockData =handleBlock.handle(j).Result;
+
+                    handleTx.handle(blockData);
+
+                    bool gotlock = false;
+                    try
                     {
-                        await handleTx.handle(blockData);
+                        spinlock.Enter(ref gotlock);
                         StateInfo.HandledBlockCount++;
-                    });
+                    }
+                    finally
+                    {
+                        if (gotlock) spinlock.Exit();
+                    }
                 });
                 taskArr.Add(newtask);
 
                 if(taskArr.Count>=5||i==toHeight)
                 {
                     StateInfo.HandlingBlockCount += taskArr.Count;
-                    await Task.WhenAll(taskArr);
+                    Task.WaitAll(taskArr.ToArray());
                     taskArr.Clear();
+                    //consoleMgr.showBlockCount();
                 }
             }
         }

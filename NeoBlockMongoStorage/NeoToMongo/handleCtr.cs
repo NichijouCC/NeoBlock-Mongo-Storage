@@ -8,17 +8,17 @@ namespace NeoToMongo
     class handleCtr
     {
 
-        async public static Task loadBlockData(int fromHeight, int toHeight)
-        {
-            for(int i= fromHeight; i<=toHeight;i++)
-            {
-                var blockdata=await handleBlock.handle(i);
-                Task.Run(async()=> {
-                    await handleTx.handle(blockdata);
-                    StateInfo.HandledBlockCount++;
-                });
-            }
-        }
+        //async public static Task loadBlockData(int fromHeight, int toHeight)
+        //{
+        //    for(int i= fromHeight; i<=toHeight;i++)
+        //    {
+        //        var blockdata=await handleBlock.handle(i);
+        //        Task.Run(async()=> {
+        //            await handleTx.handle(blockdata);
+        //            StateInfo.HandledBlockCount++;
+        //        });
+        //    }
+        //}
 
 
 

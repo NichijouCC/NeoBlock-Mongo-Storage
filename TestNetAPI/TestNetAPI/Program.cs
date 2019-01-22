@@ -15,13 +15,13 @@ namespace TestNetAPI
                     case "1":
                         APiTest.test_UtxoTransaction(5);
                         break;
-                    case "2":
-                        APiTest.test_UtxoTransaction(1000);
-
-                        break;
 
                     case "3":
                         APiTest.test_PetTransaction(10);
+                        break;
+
+                    case "2":
+                        APiTest.test_quryNep5Balance();
                         break;
                 }
             }

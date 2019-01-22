@@ -18,7 +18,7 @@ namespace NetAPI
                 .UseStartup<Startup>()
                 .UseKestrel(options =>
                 {
-                    options.Listen(IPAddress.Any, 86);
+                    options.Listen(IPAddress.Any, 7878);
                 })
                 .Build();
     }

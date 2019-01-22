@@ -16,8 +16,16 @@ namespace TestNetAPI
             {
                 string str = Tool.PostData(url, urldata).Result;
                 var json = MyJson.Parse(str).AsDict();
-                var result = json["result"];
-                return result;
+                if (json.ContainsKey("error"))
+                {
+                    Console.WriteLine("getassetutxobyaddress:" + json["error"].ToString());
+                    return null;
+                }
+                else
+                {
+                    var result = json["result"];
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -34,8 +42,15 @@ namespace TestNetAPI
             {
                 string str = Tool.PostData(url, urldata).Result;
                 var json = MyJson.Parse(str).AsDict();
-                var result = json["result"];
-                return result;
+                if(json.ContainsKey("error"))
+                {
+                    Console.WriteLine("getassetutxobyaddress:" +json["error"].ToString());
+                    return null;
+                }else
+                {
+                    var result = json["result"];
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -51,8 +66,16 @@ namespace TestNetAPI
             {
                 string str = Tool.PostData(url, urldata).Result;
                 var json = MyJson.Parse(str).AsDict();
-                var result = json["result"];
-                return result;
+                if (json.ContainsKey("error"))
+                {
+                    Console.WriteLine("getassetutxobyaddress:" + json["error"].ToString());
+                    return null;
+                }
+                else
+                {
+                    var result = json["result"];
+                    return result;
+                }
             }
             catch (Exception e)
             {
@@ -61,15 +84,30 @@ namespace TestNetAPI
             }
         }
 
-        public static MyJson.IJsonNode getNep5Balancebyaddress(string url, string address, string asset)
+        /// <summary>
+        /// 已考虑 精度
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="address"></param>
+        /// <param name="asset"></param>
+        /// <returns></returns>
+        public static MyJson.IJsonNode getnep5balancebyaddress(string url,string address,string asset)
         {
-            string urldata = Tool.MakeRpcUrlPost("getassetutxobyaddress", address, asset);
+            string urldata = Tool.MakeRpcUrlPost("getnep5balancebyaddress", address, asset);
             try
             {
                 string str = Tool.PostData(url, urldata).Result;
                 var json = MyJson.Parse(str).AsDict();
-                var result = json["result"];
-                return result;
+                if (json.ContainsKey("error"))
+                {
+                    Console.WriteLine("getassetutxobyaddress:" + json["error"].ToString());
+                    return null;
+                }
+                else
+                {
+                    var result = json["result"];
+                    return result;
+                }
             }
             catch (Exception e)
             {
